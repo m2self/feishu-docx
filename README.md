@@ -3,10 +3,6 @@
 # feishu-docx
 
 <p align="center">
-  <a href="./README_zh.md">中文</a> | <strong>English</strong>
-</p>
-
-<p align="center">
   <em>Feishu/Lark Docs、Sheet、Bitable → Markdown | AI Agent-friendly knowledge base exporter with OAuth 2.0, CLI, TUI & Claude Skills support</em><br>
 </p>
 
@@ -15,12 +11,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-  <strong>中文</strong> | <a href="./README.md">English</a>
+  <a href="https://github.com/leemysw/feishu-docx/blob/main/README_zh.md">中文</a> | <strong>English</strong>
 </p>
+
 </div>
 
 <div align="center">
-<img src="docs/tui.png" alt="Agent Kit Logo" width="90%">
+<img src="https://raw.githubusercontent.com/leemysw/feishu-docx/main/docs/tui.png" alt="feishu-docx TUI" width="90%">
 </div>
 
 ---

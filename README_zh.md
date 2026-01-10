@@ -11,12 +11,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <p align="center">
-  <strong>中文</strong> | <a href="./README.md">English</a>
+  <strong>中文</strong> | <a href="https://github.com/leemysw/feishu-docx/blob/main/README.md">English</a>
 </p>
 </div>
 
 <div align="center">
-<img src="docs/tui.png" alt="Agent Kit Logo" width="90%">
+<img src="https://raw.githubusercontent.com/leemysw/feishu-docx/main/docs/tui.png" alt="feishu-docx TUI" width="90%">
 </div>
 
 ---
