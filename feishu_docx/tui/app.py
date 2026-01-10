@@ -13,6 +13,10 @@
 [PROTOCOL]: 变更时更新此头部，然后检查 CLAUDE.md
 """
 
+import warnings
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
 import os
 from datetime import datetime
 

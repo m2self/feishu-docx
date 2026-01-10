@@ -50,7 +50,7 @@ feishu-docx config set --app-id YOUR_APP_ID --app-secret YOUR_APP_SECRET
 feishu-docx auth
 
 # Export!
-feishu-docx export "https://xxx.feishu.cn/wiki/xxx"
+feishu-docx export "https://my.feishu.cn/wiki/KUIJwaBuGiwaSIkkKJ6cfVY8nSg"
 ```
 
 ---
