@@ -1,14 +1,23 @@
+<div align="center">
+
 # feishu-docx
 
 <p align="center">
-  <strong>中文</strong> | <a href="./README.md">English</a>
+  <em>飞书云文档 → Markdown | AI Agent 友好型导出工具 | 支持 OAuth 2.0、CLI、TUI & Claude Skills</em>
 </p>
-
-> 🚀 **飞书云文档 → Markdown | AI Agent 友好型知识库导出工具**
 
 [![PyPI version](https://badge.fury.io/py/feishu-docx.svg)](https://badge.fury.io/py/feishu-docx)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+<p align="center">
+  <strong>中文</strong> | <a href="./README.md">English</a>
+</p>
+</div>
+
+<div align="center">
+<img src="docs/tui.png" alt="Agent Kit Logo" width="90%">
+</div>
 
 ---
 
@@ -16,9 +25,9 @@
 
 **让 AI Agent 读懂你的飞书知识库。**
 
-- 🤖 **为 AI 而生** — 完美支持 Claude/GPT Skills，让 Agent 直接查询飞书文档
-- 📄 **全类型覆盖** — 云文档、电子表格、多维表格、知识库，一网打尽
-- 🔐 **OAuth 2.0** — 一次授权，Token 自动刷新，告别手动管理
+- 🤖 **为AI而生** — 完美支持 Claude/GPT Skills，让 Agent 直接查询飞书文档
+- 📄 **全面覆盖** — 云文档、电子表格、多维表格、知识库，一网打尽
+- 🔐 **自动授权** — 一次授权，Token 自动刷新，告别手动管理
 - 🎨 **双重界面** — CLI 命令行 + TUI 终端图形界面，任君选择
 - 📦 **开箱即用** — `pip install` 即可使用，零配置开始导出
 
@@ -37,7 +46,7 @@ feishu-docx config set --app-id YOUR_APP_ID --app-secret YOUR_APP_SECRET
 feishu-docx auth
 
 # 导出！
-feishu-docx export "https://xxx.feishu.cn/wiki/xxx"
+feishu-docx export "https://my.feishu.cn/wiki/KUIJwaBuGiwaSIkkKJ6cfVY8nSg"
 ```
 
 ---
@@ -49,6 +58,7 @@ feishu-docx export "https://xxx.feishu.cn/wiki/xxx"
 本项目已包含 Claude Skills 配置，位于 `.skills/feishu-docx/SKILL.md`。
 
 将此 Skill 复制到你的 Agent 项目中，Claude 就能：
+
 - 📖 读取飞书知识库作为上下文
 - 🔍 搜索和引用内部文档
 - 📝 *（规划中）* 将对话内容写入飞书
@@ -57,15 +67,30 @@ feishu-docx export "https://xxx.feishu.cn/wiki/xxx"
 
 ## ✨ 功能特性
 
-| 功能 | 描述 |
-|------|------|
-| 📄 云文档导出 | Docx → Markdown，保留格式、图片、表格 |
-| 📊 电子表格导出 | Sheet → Markdown 表格 |
-| 📋 多维表格导出 | Bitable → Markdown 表格 |
-| 📚 知识库导出 | Wiki 节点自动解析，支持嵌套结构 |
-| 🖼️ 自动下载图片 | 图片保存到本地，Markdown 相对路径引用 |
-| 🔐 OAuth 2.0 | 自动打开浏览器授权，Token 持久化缓存 |
-| 🎨 精美 TUI | 基于 Textual 的终端图形界面 |
+| 功能           | 描述                         |
+|--------------|----------------------------|
+| 📄 云文档导出     | Docx → Markdown，保留格式、图片、表格 |
+| 📊 电子表格导出    | Sheet → Markdown 表格        |
+| 📋 多维表格导出    | Bitable → Markdown 表格      |
+| 📚 知识库导出     | Wiki 节点自动解析，支持嵌套结构         |
+| 🖼️ 自动下载图片   | 图片保存到本地，Markdown 相对路径引用    |
+| 🔐 OAuth 2.0 | 自动打开浏览器授权，Token 持久化缓存      |
+| 🎨 精美 TUI    | 基于 Textual 的终端图形界面         |
+
+### ✅ 支持的Block
+
+本工具目前支持导出以下飞书/ Lark 文档组件：
+
+| 组件分类     | 具体内容                     | 支持情况 | 备注            |
+|:---------|:-------------------------|:----:|:--------------|
+| **基础文本** | 标题、正文、列表、任务(Todo)、代码块、引用 |  ✅   | 完美支持          |
+| **文本样式** | 加粗、斜体、删除线、下划线、链接、@人员     |  ✅   | 完美支持          |
+| **布局结构** | 分栏、高亮块、分割线               |  ✅   | 完美支持          |
+| **表格**   | 原生表格                     |  ✅   | 支持导出为 md/html |
+| **多媒体**  | 图片、画板                    |  ✅   | 画板将导出为图片      |
+| **嵌入文档** | 电子表格、多维表格                |  ✅   | **仅导出文字内容**   |
+| **特殊块**  | 同步块                      |  ⚠️  | 仅支持同文档内的原始块   |
+| **文件**   | 附件                       |  ⚠️  | 仅展示文件名，无下载链接  |
 
 ---
 
@@ -105,13 +130,20 @@ content = exporter.export_content("https://xxx.feishu.cn/docx/xxx")
 1. 访问 [飞书开放平台](https://open.feishu.cn/) 创建应用
 2. 添加重定向 URL：`http://127.0.0.1:9527/`
 3. 申请以下权限：
-   - `docx:document:readonly` - 云文档
-   - `wiki:wiki:readonly` - 知识库
-   - `sheets:spreadsheet:readonly` - 电子表格
-   - `bitable:bitable:readonly` - 多维表格
-   - `offline_access` - Token 刷新
+
+```python
+"docx:document:readonly"  # 查看云文档
+"wiki:wiki:readonly"  # 查看知识库
+"drive:drive:readonly"  # 查看云空间文件（图片下载）
+"sheets:spreadsheet:readonly"  # 查看电子表格
+"bitable:app:readonly"  # 查看多维表格
+"board:whiteboard:node:read"  # 查看白板
+"contact:contact.base:readonly"  # 获取用户基本信息（@用户名称）
+"offline_access"  # 离线访问（获取 refresh_token）
+```
 
 4. 保存凭证：
+
 ```bash
 feishu-docx config set --app-id cli_xxx --app-secret xxx
 ```
@@ -120,14 +152,14 @@ feishu-docx config set --app-id cli_xxx --app-secret xxx
 
 ## 📖 命令参考
 
-| 命令 | 描述 |
-|------|------|
+| 命令             | 描述             |
+|----------------|----------------|
 | `export <URL>` | 导出文档为 Markdown |
-| `auth` | OAuth 授权 |
-| `tui` | TUI 交互界面 |
-| `config set` | 设置凭证 |
-| `config show` | 查看配置 |
-| `config clear` | 清除缓存 |
+| `auth`         | OAuth 授权       |
+| `tui`          | TUI 交互界面       |
+| `config set`   | 设置凭证           |
+| `config show`  | 查看配置           |
+| `config clear` | 清除缓存           |
 
 ---
 
