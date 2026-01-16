@@ -317,6 +317,19 @@ class DocumentParser:
                 ) or ""
             return ""
 
+        # 文件/附件 Block
+        if bt == BlockType.FILE:
+            if not block.file:
+                return ""
+            file_name = block.file.name or "未命名文件"
+            file_token = block.file.token
+            # 获取临时下载 URL
+            download_url = self.sdk.get_file_download_url(file_token, self.user_access_token)
+            if download_url:
+                return f"📎 [{file_name}]({download_url})"
+            # 回退：使用 token 作为标识
+            return f"📎 {file_name} (token: `{file_token}`)"
+
         return ""
 
     def _render_text_payload(self, payload) -> str:

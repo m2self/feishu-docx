@@ -254,6 +254,43 @@ class FeishuSDK:
         file_path.write_bytes(response.file.read())
         return str(file_path)
 
+    def get_file_download_url(self, file_token: str, user_access_token: str) -> Optional[str]:
+        """
+        获取文件临时下载 URL
+
+        Args:
+            file_token: 文件 token
+            user_access_token: 用户访问凭证
+
+        Returns:
+            临时下载 URL（有效期约 1 小时）
+        """
+        from lark_oapi.api.drive.v1 import (
+            BatchGetTmpDownloadUrlMediaRequest,
+            BatchGetTmpDownloadUrlMediaResponse,
+        )
+
+        request = (
+            BatchGetTmpDownloadUrlMediaRequest.builder()
+            .file_tokens([file_token])
+            .build()
+        )
+        option = lark.RequestOption.builder().user_access_token(user_access_token).build()
+        response: BatchGetTmpDownloadUrlMediaResponse = self.client.drive.v1.media.batch_get_tmp_download_url(
+            request, option
+        )
+
+        if not response.success():
+            self._log_error("drive.v1.media.batch_get_tmp_download_url", response)
+            return None
+
+        # 从响应中提取下载 URL
+        if response.data and response.data.tmp_download_urls:
+            for item in response.data.tmp_download_urls:
+                if item.file_token == file_token:
+                    return item.tmp_download_url
+        return None
+
     # ==========================================================================
     # 电子表格
     # ==========================================================================

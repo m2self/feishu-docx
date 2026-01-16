@@ -93,7 +93,7 @@ This tool currently supports exporting the following Feishu/Lark document compon
 | **Media**      | Images, Drawing Boards                                         | ✅      | Drawing boards exported as images        |
 | **Embedded**   | Spreadsheets (Sheets), Bitable                                 | ✅      | **Text content only**                    |
 | **Special**    | Synced Blocks                                                  | ⚠️     | Original blocks within the same doc only |
-| **Files**      | Attachments                                                    | ⚠️     | File name only (no download links)       |
+| **Files**      | Attachments                                                    | ✅      | File name + download link                |
 
 ---
 
@@ -175,6 +175,12 @@ feishu-docx config set --app-id cli_xxx --app-secret xxx
 - [ ] Batch export entire wiki space
 - [ ] MCP Server support
 - [ ] Write to Feishu (create/update docs)
+
+---
+
+## 📜 Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history.
 
 ---
 

@@ -210,6 +210,13 @@ class BoardBody(BlockToken):
     height: Optional[int] = None
 
 
+class FileBody(BaseModel):
+    """文件/附件 Payload"""
+    token: str
+    name: Optional[str] = None
+    view_type: Optional[int] = None  # 1: 卡片视图, 2: 预览视图
+
+
 class ReferenceBody(BlockToken):
     """引用 Block Payload"""
     layout_mode: Optional[str] = None
@@ -250,6 +257,7 @@ class FeishuBlock(BaseModel):
     table: Optional[TableBody] = None
     sheet: Optional[BlockToken] = None
     board: Optional[BoardBody] = None
+    file: Optional[FileBody] = None
     quote_block: Optional[Dict] = None
     reference_base: Optional[ReferenceBody] = None
 
