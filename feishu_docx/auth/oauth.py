@@ -141,8 +141,8 @@ class OAuthCallbackServer(HTTPServer):
 
 # 飞书云文档导出所需的权限
 DEFAULT_SCOPES = [
-    "docx:document:readonly",         # 查看云文档
-    "wiki:wiki:readonly",             # 查看知识库
+    "docx:document",                  # 查看云文档
+    "wiki:wiki",                      # 查看知识库
     "drive:drive:readonly",           # 查看云空间文件（图片下载）
     "sheets:spreadsheet:readonly",    # 查看电子表格
     "bitable:app:readonly",           # 查看多维表格
