@@ -37,7 +37,7 @@ from lark_oapi.api.board.v1 import (
     DownloadAsImageWhiteboardResponse,
 )
 from lark_oapi.api.contact.v3 import GetUserRequest, GetUserResponse
-from lark_oapi.api.docx.v1 import ListDocumentBlockRequest, ListDocumentBlockResponse
+from lark_oapi.api.docx.v1 import Block, ListDocumentBlockRequest, ListDocumentBlockResponse
 from lark_oapi.api.drive.v1 import DownloadMediaRequest, DownloadMediaResponse
 from lark_oapi.api.sheets.v3 import QuerySpreadsheetSheetRequest, QuerySpreadsheetSheetResponse, Sheet
 from lark_oapi.api.wiki.v2 import GetNodeSpaceRequest, GetNodeSpaceResponse, Node
@@ -169,7 +169,7 @@ class FeishuSDK:
             "title": doc.title or document_id,
         }
 
-    def get_document_block_list(self, document_id: str, user_access_token: str) -> List[dict]:
+    def get_document_block_list(self, document_id: str, user_access_token: str) -> List[Block]:
         """
         获取文档所有 Block
 
@@ -204,7 +204,7 @@ class FeishuSDK:
 
             has_more = response.data.has_more
             page_token = response.data.page_token
-            blocks.extend(json.loads(response.raw.content).get("data", {}).get("items", []))
+            blocks.extend(response.data.items)
 
         return blocks
 

@@ -17,11 +17,12 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 from urllib.parse import unquote
 
+from lark_oapi.api.docx.v1 import Block
 from rich.console import Console
 
 from feishu_docx.core.sdk import FeishuSDK
 from feishu_docx.schema.code_style import CODE_STYLE_MAP
-from feishu_docx.schema.models import BlockType, FeishuBlock, TableMode
+from feishu_docx.schema.models import BlockType, TableMode
 from feishu_docx.utils.progress import ProgressManager
 from feishu_docx.utils.render_table import render_table_html, render_table_markdown
 
@@ -79,8 +80,11 @@ class DocumentParser:
         self.with_block_ids = with_block_ids
 
         # Block 缓存
-        self.blocks_map: Dict[str, FeishuBlock] = {}
-        self.root_block: Optional[FeishuBlock] = None
+        self.blocks_map: Dict[str, Block] = {}
+        self.root_block: Optional[Block] = None
+
+        # order 序列号
+        self.last_order_seq = 1
 
         # 预处理
         self._preprocess()
@@ -91,12 +95,12 @@ class DocumentParser:
 
         # 阶段1: 获取 Block 列表
         with pm.spinner("获取文档结构..."):
-            raw_data_list = self.sdk.get_document_block_list(
+            raw_data = self.sdk.get_document_block_list(
                 document_id=self.document_id,
                 user_access_token=self.user_access_token,
             )
 
-        total_blocks = len(raw_data_list)
+        total_blocks = len(raw_data)
         pm.log(f"  [dim]发现 {total_blocks} 个 Block[/dim]")
         pm.report(f"发现  {total_blocks} 个 Block", total_blocks, total_blocks)
 
@@ -105,30 +109,17 @@ class DocumentParser:
 
         # 阶段2: 反序列化 Block
         with pm.bar("解析 Block...", total_blocks) as advance:
-            for item in raw_data_list:
-                try:
-                    block = FeishuBlock(**item)
-                    self.blocks_map[block.block_id] = block
-                except Exception: # noqa
-                    pm.log(f"  [yellow]跳过: {item.get('block_id', '?')[:8]}...[/yellow]")
+            for item in raw_data:
+                self.blocks_map[item.block_id] = item
                 advance()  # noqa
-
-        # 阶段3: 构建树结构
-        with pm.spinner("构建树结构..."):
-            for block in self.blocks_map.values():
-                if block.children:
-                    block.sub_blocks = [
-                        self.blocks_map[cid] for cid in block.children
-                        if cid in self.blocks_map
-                    ]
 
         # 确定根节点
         self.root_block = next(
             (b for b in self.blocks_map.values() if b.block_type == BlockType.PAGE),
             None,
         )
-        if not self.root_block and raw_data_list:
-            first_id = raw_data_list[0].get("block_id")
+        if not self.root_block and raw_data:
+            first_id = raw_data[0].block_id
             self.root_block = self.blocks_map.get(first_id)
 
         pm.log("  [dim]预处理完成[/dim]")
@@ -159,9 +150,16 @@ class DocumentParser:
 
         return f"# {title}\n{body}"
 
+    def _get_sub_blocks(self, block: Block) -> List[Block]:
+        """获取 block 的子 Block 列表"""
+        if not block.children:
+            return []
+        sub_blocks = [self.blocks_map[sub_id] for sub_id in block.children]
+        return sub_blocks
+
     def _recursive_render(
             self,
-            block: FeishuBlock,
+            block: Block,
             depth: int = 0,
             advance: Optional[Callable[[], None]] = None,
     ) -> str:
@@ -181,7 +179,7 @@ class DocumentParser:
 
         # 3. 递归渲染子节点
         children_content = []
-        for child in block.sub_blocks:
+        for child in self._get_sub_blocks(block):
             child_text = self._recursive_render(child, depth + 1, advance)
             if child_text:
                 children_content.append(child_text)
@@ -211,7 +209,7 @@ class DocumentParser:
 
         return content.strip()
 
-    def _render_block_self(self, block: FeishuBlock) -> str:
+    def _render_block_self(self, block: Block) -> str:
         """根据 block_type 渲染对应的 Markdown"""
         content = self._render_block_content(block)
 
@@ -220,7 +218,7 @@ class DocumentParser:
             return f"<!-- block:{block.block_id} -->\n{content}\n<!-- /block -->"
         return content
 
-    def _render_block_content(self, block: FeishuBlock) -> str:
+    def _render_block_content(self, block: Block) -> str:
         """渲染 Block 的实际内容"""
         bt = block.block_type
 
@@ -242,6 +240,11 @@ class DocumentParser:
             seq = "1"
             if block.ordered and block.ordered.style:
                 seq = block.ordered.style.sequence or "1"
+                if seq == "auto":
+                    seq = self.last_order_seq + 1
+                    self.last_order_seq = seq
+                else:
+                    self.last_order_seq = int(seq)
             return f"{seq}. {self._render_text_payload(block.ordered)}"
 
         if bt == BlockType.TODO:
@@ -259,7 +262,7 @@ class DocumentParser:
             return f"> {self._render_text_payload(block.quote)}"
 
         if bt == BlockType.CALLOUT:
-            return f"> 💡 **{self._render_text_payload(block.callout)}**"
+            return f"> 💡 **{self._render_text_payload(block.callout)}**" # noqa
 
         if bt == BlockType.DIVIDER:
             return "---"
@@ -369,7 +372,7 @@ class DocumentParser:
                     if style.underline:
                         text = f"<u>{text}</u>"
                     if style.link:
-                        text = f"[{text}]({unquote(style.link.get('url', ''))})"
+                        text = f"[{text}]({unquote(style.link.url)})"
             elif el.mention_user:
                 user_name = self.sdk.get_user_name(el.mention_user.user_id, self.user_access_token)
                 text = f"@{user_name}"
@@ -383,7 +386,7 @@ class DocumentParser:
             result.append(text)
         return "".join(result)
 
-    def _render_table(self, table_block: FeishuBlock) -> str:
+    def _render_table(self, table_block: Block) -> str:
         """渲染表格 Block"""
         if not table_block.table or not table_block.table.property:
             return "[空表格]"
@@ -394,7 +397,8 @@ class DocumentParser:
         merge_infos = props.merge_info
 
         # 获取所有 Cell Block
-        all_cell_blocks = table_block.sub_blocks if table_block.sub_blocks else []
+        sub_blocks = self._get_sub_blocks(table_block)
+        all_cell_blocks = sub_blocks if sub_blocks else []
         global_cell_cursor = 0
 
         # 构建网格
@@ -426,7 +430,8 @@ class DocumentParser:
                 cell_content = ""
                 if global_cell_cursor < len(all_cell_blocks):
                     cell_block = all_cell_blocks[global_cell_cursor]
-                    inner_texts = [self._recursive_render(child, depth=0) for child in cell_block.sub_blocks]
+                    cell_sub_blocks = self._get_sub_blocks(cell_block)
+                    inner_texts = [self._recursive_render(child, depth=0) for child in cell_sub_blocks]
                     cell_content = "<br>".join(inner_texts)
                     global_cell_cursor += 1
 

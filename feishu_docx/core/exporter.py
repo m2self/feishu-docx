@@ -163,7 +163,7 @@ class FeishuExporter:
         url: str,
         output_dir: str | Path = ".",
         filename: Optional[str] = None,
-        table_format: Literal["html", "md"] = "html",
+        table_format: Literal["html", "md"] = "md",
         silent: bool = False,
         progress_callback=None,
         with_block_ids: bool = False,

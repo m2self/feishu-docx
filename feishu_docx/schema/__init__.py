@@ -15,20 +15,12 @@
 
 from feishu_docx.schema.models import (
     BlockType,
-    FeishuBlock,
-    TableMode,
-    TextStyleBody,
-    TableMergeInfo,
-    TableProperty,
+    TableMode
 )
 from feishu_docx.schema.code_style import CODE_STYLE_MAP
 
 __all__ = [
     "BlockType",
-    "FeishuBlock",
     "TableMode",
-    "TextStyleBody",
-    "TableMergeInfo",
-    "TableProperty",
     "CODE_STYLE_MAP",
 ]
