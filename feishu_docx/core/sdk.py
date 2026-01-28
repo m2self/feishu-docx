@@ -929,6 +929,7 @@ class FeishuSDK:
 
         console.print(
             f"[red]API 调用失败: {api_name}[/red]\n"
+            f"  status: {response.raw.status_code}\n"
             f"  code: {response.code}\n"
             f"  msg: {response.msg}\n"
             f"  log_id: {response.get_log_id()}\n"

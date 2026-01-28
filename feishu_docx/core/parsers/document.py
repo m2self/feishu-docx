@@ -262,7 +262,7 @@ class DocumentParser:
             return f"> {self._render_text_payload(block.quote)}"
 
         if bt == BlockType.CALLOUT:
-            return f"> 💡 **{self._render_text_payload(block.callout)}**" # noqa
+            return f"> 💡 {self._render_text_payload(block.callout)}" # noqa
 
         if bt == BlockType.DIVIDER:
             return "---"
@@ -277,6 +277,8 @@ class DocumentParser:
                     rel_path = f"{self.assets_dir.name}/{Path(file_path).name}"
                     return f"![image]({rel_path})"
                 return f"![image]({file_path})"
+            else:
+                return f"![图片下载失败]({block.image.token})"
             return ""
 
         if bt == BlockType.BOARD:
@@ -362,7 +364,7 @@ class DocumentParser:
                 style = el.text_run.text_element_style
                 if style:
                     if style.bold:
-                        text = f"**{text}**"
+                        text = f"**{text}** " if text else ""
                     if style.italic:
                         text = f"*{text}*"
                     if style.strikethrough:

@@ -68,14 +68,14 @@ class FeishuExporter:
 
     # URL 模式匹配
     URL_PATTERNS = {
-        # 云文档: https://xxx.feishu.cn/docx/{document_id}
-        "docx": re.compile(r"(?:feishu|larksuite)\.cn/docx/([a-zA-Z0-9]+)"),
-        # 电子表格: https://xxx.feishu.cn/sheets/{spreadsheet_token}
-        "sheet": re.compile(r"(?:feishu|larksuite)\.cn/sheets/([a-zA-Z0-9]+)"),
-        # 多维表格: https://xxx.feishu.cn/base/{app_token}
-        "bitable": re.compile(r"(?:feishu|larksuite)\.cn/base/([a-zA-Z0-9]+)"),
-        # Wiki 文档: https://xxx.feishu.cn/wiki/{node_token}
-        "wiki": re.compile(r"(?:feishu|larksuite)\.cn/wiki/([a-zA-Z0-9]+)"),
+        # 云文档: https://xxx.feishu.cn/docx/{document_id} 或 https://xxx.larkoffice.com/docx/{document_id}
+        "docx": re.compile(r"(?:feishu|larksuite)\.cn/docx/([a-zA-Z0-9]+)|larkoffice\.com/docx/([a-zA-Z0-9]+)"),
+        # 电子表格: https://xxx.feishu.cn/sheets/{spreadsheet_token} 或 https://xxx.larkoffice.com/sheets/{spreadsheet_token}
+        "sheet": re.compile(r"(?:feishu|larksuite)\.cn/sheets/([a-zA-Z0-9]+)|larkoffice\.com/sheets/([a-zA-Z0-9]+)"),
+        # 多维表格: https://xxx.feishu.cn/base/{app_token} 或 https://xxx.larkoffice.com/base/{app_token}
+        "bitable": re.compile(r"(?:feishu|larksuite)\.cn/base/([a-zA-Z0-9]+)|larkoffice\.com/base/([a-zA-Z0-9]+)"),
+        # Wiki 文档: https://xxx.feishu.cn/wiki/{node_token} 或 https://xxx.larkoffice.com/wiki/{node_token}
+        "wiki": re.compile(r"(?:feishu|larksuite)\.cn/wiki/([a-zA-Z0-9]+)|larkoffice\.com/wiki/([a-zA-Z0-9]+)"),
     }
 
     def __init__(
@@ -154,7 +154,9 @@ class FeishuExporter:
         for doc_type, pattern in self.URL_PATTERNS.items():
             match = pattern.search(url)
             if match:
-                return DocumentInfo(doc_type=doc_type, doc_id=match.group(1))
+                # 支持多个域名，ID 可能在 group(1) 或 group(2)
+                doc_id = match.group(1) or match.group(2)
+                return DocumentInfo(doc_type=doc_type, doc_id=doc_id)
 
         raise ValueError(f"不支持的 URL 格式: {url}")
 

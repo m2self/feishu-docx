@@ -143,7 +143,7 @@ class OAuthCallbackServer(HTTPServer):
 DEFAULT_SCOPES = [
     "docx:document",                  # 查看云文档
     "wiki:wiki",                      # 查看知识库
-    "drive:drive:readonly",           # 查看云空间文件（图片下载）
+    "drive:drive",                    # 查看云空间文件（图片下载）
     "sheets:spreadsheet:readonly",    # 查看电子表格
     "bitable:app:readonly",           # 查看多维表格
     "board:whiteboard:node:read",     # 查看白板
